@@ -73,7 +73,8 @@ class SDS011(object):
         @rtype: list
         """
         cmd = self.cmd_begin()
-        cmd += (b"\x01" + b"\x01" + b"\x01" + b"\x01")
+        for val in range(4):
+            cmd += random.randint(1, 6).to_bytes(1, byteorder='big')
         cmd = self._finish_cmd(cmd)
         print("sending: {}".format(cmd))
         self._execute(cmd)
