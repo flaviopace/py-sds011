@@ -2,6 +2,8 @@
 """
 import struct
 import serial
+import time
+import random
 
 #TODO: Commands against the sensor should read the reply and return success status.
 
@@ -12,7 +14,7 @@ class SDS011(object):
 
     HEAD = b'\xaa'
     TAIL = b'\xab'
-    CMD_ID = b'\xb4'
+    CMD_ID = b'\xc0'
 
     # The sent command is a read or a write
     READ = b"\x00"
@@ -30,6 +32,9 @@ class SDS011(object):
     SLEEP = b"\x00"
     WORK = b"\x01"
 
+    ID_1 = b"\x01"
+    ID_2 = b"\x01"
+
     # The work period command ID
     WORK_PERIOD_CMD = b'\x08'
 
@@ -41,7 +46,6 @@ class SDS011(object):
                                  baudrate=baudrate,
                                  timeout=timeout)
         self.ser.flush()
-        self.set_report_mode(active=not use_query_mode)
 
     def _execute(self, cmd_bytes):
         """Writes a byte sequence to the serial.
@@ -51,14 +55,10 @@ class SDS011(object):
     def _get_reply(self):
         """Read reply from device."""
         raw = self.ser.read(size=10)
-        print("Received {}".format(raw))
         data = raw[2:8]
         if len(data) == 0:
-            print("Empty answer!")
             return None
-        checksum = sum(d for d in data) & 255
-        if (checksum != raw[8]):
-            print("CRC not good! received {} expected {}".format(checksum,raw[8]))
+        if (sum(d for d in data) & 255) != raw[8]:
             return None  #TODO: also check cmd id
         return raw
 
@@ -68,67 +68,15 @@ class SDS011(object):
         """
         return self.HEAD + self.CMD_ID
 
-    def set_report_mode(self, read=False, active=False):
+    def send_data(self, read=False, active=False):
         """Get sleep command. Does not contain checksum and tail.
         @rtype: list
         """
         cmd = self.cmd_begin()
-        cmd += (self.REPORT_MODE_CMD
-                + (self.READ if read else self.WRITE)
-                + (self.ACTIVE if active else self.PASSIVE)
-                + b"\x00" * 10)
+        cmd += (b"\x01" + b"\x01" + b"\x01" + b"\x01")
         cmd = self._finish_cmd(cmd)
+        print("sending: {}".format(cmd))
         self._execute(cmd)
-        self._get_reply()
-
-    def query(self):
-        """Query the device and read the data.
-
-        @return: Air particulate density in micrograms per cubic meter.
-        @rtype: tuple(float, float) -> (PM2.5, PM10)
-        """
-        cmd = self.cmd_begin()
-        cmd += (self.QUERY_CMD
-                + b"\x00" * 12)
-        cmd = self._finish_cmd(cmd)
-        self._execute(cmd)
-
-        raw = self._get_reply()
-        if raw is None:
-            return None  #TODO:
-        data = struct.unpack('<HH', raw[2:6])
-        pm25 = data[0] / 10.0
-        pm10 = data[1] / 10.0
-        return (pm25, pm10)
-
-    def sleep(self, read=False, sleep=True):
-        """Sleep/Wake up the sensor.
-
-        @param sleep: Whether the device should sleep or work.
-        @type sleep: bool
-        """
-        cmd = self.cmd_begin()
-        cmd += (self.SLEEP_CMD
-                + (self.READ if read else self.WRITE)
-                + (self.SLEEP if sleep else self.WORK)
-                + b"\x00" * 10)
-        cmd = self._finish_cmd(cmd)
-        self._execute(cmd)
-        self._get_reply()
-
-    def set_work_period(self, read=False, work_time=0):
-        """Get work period command. Does not contain checksum and tail.
-        @rtype: list
-        """
-        assert work_time >= 0 and work_time <= 30
-        cmd = self.cmd_begin()
-        cmd += (self.WORK_PERIOD_CMD
-                + (self.READ if read else self.WRITE)
-                + bytes([work_time])
-                + b"\x00" * 10)
-        cmd = self._finish_cmd(cmd)
-        self._execute(cmd)
-        self._get_reply()
 
     def _finish_cmd(self, cmd, id1=b"\xff", id2=b"\xff"):
         """Add device ID, checksum and tail bytes.
@@ -176,10 +124,22 @@ class SDS011(object):
 
 if __name__ == "__main__":
     # Init sensor
-    sensor = SDS011("/dev/ttys004", use_query_mode=True)
+    sds011 = SDS011("/dev/ttys005", use_query_mode=True)
     # Turn-on sensor
-    sensor.sleep(sleep=False)
-    # Turn-off sensor
-    sensor.sleep(sleep=True)
-    # Query Sensor
-    pm2_5,pm10 = sensor.query()
+    while (True):
+        # Check if incoming bytes are waiting to be read from the serial input
+        # buffer.
+        # NB: for PySerial v3.0 or later, use property `in_waiting` instead of
+        # function `inWaiting()` below!
+        if (sds011.ser.inWaiting() > 0):
+            # read the bytes and convert from binary array to ASCII
+            data = sds011.ser.read(19)
+            # print the incoming string without putting a new-line
+            # ('\n') automatically after every print()
+            print(data)
+            sds011.send_data()
+            # Put the rest of your code you want here
+
+        # Optional, but recommended: sleep 10 ms (0.01 sec) once per loop to let
+        # other threads on your PC run during this time.
+        time.sleep(0.01)
