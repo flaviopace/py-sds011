@@ -50,6 +50,10 @@ class mydb(object):
         self.cursor.execute(content)
         self.db.commit()
 
+    def tableDelete(self, tablename="measures"):
+        self.cursor.execute("DELETE from {}".format(tablename))
+        self.db.commit()
+
     def close(self):
         self.db.close()
 

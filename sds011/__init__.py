@@ -195,4 +195,5 @@ if __name__ == "__main__":
         db.tableInsert(values='"3.4", "5", "5.6", "7"')
 
     db.showTableContent()
+    db.tableDelete()
     db.close()
