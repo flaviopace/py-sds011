@@ -3,7 +3,7 @@
 import struct
 import serial
 import aqi
-
+from db_connection import mydb
 #TODO: Commands against the sensor should read the reply and return success status.
 
 class SDS011(object):
@@ -183,8 +183,16 @@ if __name__ == "__main__":
     # Turn-off sensor
     sensor.sleep(sleep=True)
     # Query Sensor
+    # Init DB
+    db = mydb()
     for iter in range(10):
         pm2_5, pm10 = sensor.query()
         aqi_pm2_5 = aqi.to_iaqi(aqi.POLLUTANT_PM25, str(pm2_5))
         aqi_pm10 = aqi.to_iaqi(aqi.POLLUTANT_PM10, str(pm10))
         print("PM2_5: {} - AQI {}\nPM10: {} - AQI {}".format(pm2_5, aqi_pm2_5, pm10, aqi_pm10))
+        val_str = '"{}", "{}", "{}", "{}"'.format(pm2_5, aqi_pm2_5, pm10, aqi_pm10)
+        print("values: {}".format(val_str))
+        db.tableInsert(values='"3.4", "5", "5.6", "7"')
+
+    db.showTableContent()
+    db.close()
