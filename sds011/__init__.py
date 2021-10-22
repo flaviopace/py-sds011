@@ -2,6 +2,7 @@
 """
 import struct
 import serial
+import aqi
 
 #TODO: Commands against the sensor should read the reply and return success status.
 
@@ -182,4 +183,8 @@ if __name__ == "__main__":
     # Turn-off sensor
     sensor.sleep(sleep=True)
     # Query Sensor
-    pm2_5,pm10 = sensor.query()
+    for iter in range(10):
+        pm2_5, pm10 = sensor.query()
+        aqi_pm2_5 = aqi.to_iaqi(aqi.POLLUTANT_PM25, str(pm2_5))
+        aqi_pm10 = aqi.to_iaqi(aqi.POLLUTANT_PM10, str(pm10))
+        print("PM2_5: {} - AQI {}\nPM10: {} - AQI {}".format(pm2_5, aqi_pm2_5, pm10, aqi_pm10))
