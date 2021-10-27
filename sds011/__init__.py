@@ -3,6 +3,7 @@
 import struct
 import serial
 import aqi
+import time
 from db_connection import mydb
 #TODO: Commands against the sensor should read the reply and return success status.
 
@@ -177,15 +178,17 @@ class SDS011(object):
 
 if __name__ == "__main__":
     # Init sensor
-    sensor = SDS011("/dev/ttys004", use_query_mode=True)
-    # Turn-on sensor
-    sensor.sleep(sleep=False)
+    sensor = SDS011("/dev/tty.wchusbserial410", use_query_mode=True)
     # Turn-off sensor
-    sensor.sleep(sleep=True)
-    # Query Sensor
+    #sensor.sleep(sleep=True)
+    # Turn-off sensor
+    sensor.sleep(sleep=False)
+    # Sleep 15 seconds
+    time.sleep(15)
     # Init DB
     db = mydb()
-    for iter in range(10):
+    for iter in range(1):
+        # Query Sensor
         pm2_5, pm10 = sensor.query()
         aqi_pm2_5 = aqi.to_iaqi(aqi.POLLUTANT_PM25, str(pm2_5))
         aqi_pm10 = aqi.to_iaqi(aqi.POLLUTANT_PM10, str(pm10))
