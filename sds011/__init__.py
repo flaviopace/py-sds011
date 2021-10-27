@@ -180,8 +180,6 @@ if __name__ == "__main__":
     # Init sensor
     sensor = SDS011("/dev/tty.wchusbserial410", use_query_mode=True)
     # Turn-off sensor
-    #sensor.sleep(sleep=True)
-    # Turn-off sensor
     sensor.sleep(sleep=False)
     # Sleep 15 seconds
     time.sleep(15)
@@ -195,7 +193,12 @@ if __name__ == "__main__":
         print("PM2_5: {} - AQI {}\nPM10: {} - AQI {}".format(pm2_5, aqi_pm2_5, pm10, aqi_pm10))
         val_str = '"{}", "{}", "{}", "{}"'.format(pm2_5, aqi_pm2_5, pm10, aqi_pm10)
         print("values: {}".format(val_str))
-        db.tableInsert(values='"3.4", "5", "5.6", "7"')
+        db.tableInsert(values=val_str)
+        # Sleep 2 seconds before next measure
+        time.sleep(2)
+
+    # Turn-off sensor
+    sensor.sleep(sleep=True)
 
     db.showTableContent()
     db.tableDelete()
