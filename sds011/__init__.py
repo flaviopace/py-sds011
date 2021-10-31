@@ -212,7 +212,5 @@ if __name__ == "__main__":
 
     # Turn-off sensor
     sensor.sleep(sleep=True)
-
     db.showTableContent()
-    db.tableDelete()
     db.close()

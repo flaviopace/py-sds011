@@ -46,6 +46,7 @@ class Aqicn(object):  # define a class called Aqicn
                                              'sensor.specie': 'pm10', 'sensor.value': pm10 })
             headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/plain"}
             conn = httplib2.HTTPConnectionWithTimeout(self.__url)
+            print("Uploading data to : {} ".format(self.__url))
             conn.request("POST", "/sensor/upload", params, headers)
             response = conn.getresponse()
             print("Response: {} , Status {}".format(response.status, response.reason))

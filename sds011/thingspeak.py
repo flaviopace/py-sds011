@@ -25,6 +25,7 @@ class Thingspeak(object):                       # define a class called Thingspe
             params = urllib.parse.urlencode({'field1': value1, 'field2': value2, 'field3': value3, \
                                        'field4': value4, 'key': self.write_key})
             headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/plain"}
+            print("Uploading data to : {} ".format(self.__url))
             conn = httplib2.HTTPConnectionWithTimeout(self.__url)
             conn.request("POST", "/update", params, headers)
             response = conn.getresponse()
