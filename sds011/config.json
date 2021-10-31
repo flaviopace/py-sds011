@@ -1,0 +1,21 @@
+{
+  "db_config" :
+   {
+     "host": "8.8.8.8",
+     "name": "db_name",
+     "port": 12345,
+     "user": "user",
+     "password": "pass"
+  },
+
+  "ts_config" :
+  {
+    "wr_key": "dfrt32de",
+    "ch_id": "12345"
+  },
+
+  "aqi_config" :
+  {
+    "webtoken": "asdf4567lk00"
+  }
+}
