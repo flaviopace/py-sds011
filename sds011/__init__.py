@@ -4,8 +4,13 @@ import struct
 import serial
 import aqi
 import time
+import json
 from db_connection import mydb
+from thingspeak import Thingspeak
+from aqiUpload import Aqicn
 #TODO: Commands against the sensor should read the reply and return success status.
+
+JSON_FILE = 'config.json'
 
 class SDS011(object):
     """Provides method to read from a SDS011 air particlate density sensor
@@ -179,14 +184,18 @@ class SDS011(object):
 if __name__ == "__main__":
     # Init sensor
     sensor = SDS011("/dev/tty.wchusbserial620", use_query_mode=True)
-    # Turn-off sensor
+    # Turn-on sensor
     sensor.sleep(sleep=False)
     # Sleep 15 seconds
     time.sleep(15)
+    # load Config
+    with open(JSON_FILE, 'r') as in_file:
+        conf = json.load(in_file)
     # Init DB
-    db = mydb()
-    ts = Thingspeak(write_api_key=wr_key, channel_id=ch_id)
-    myaqi = Aqicn(token=aqi_token)
+    db = mydb(host=conf['db_config']['host'], name=conf['db_config']['name'], port=conf['db_config']['port'],\
+              user=conf['db_config']['user'], password=conf['db_config']['password'])
+    ts = Thingspeak(write_api_key=conf['ts_config']['wr_key'], channel_id=conf['ts_config']['ch_id'])
+    myaqi = Aqicn(token=conf['aqi_config']['webtoken'])
     for iter in range(1):
         # Query Sensor
         pm2_5, pm10 = sensor.query()

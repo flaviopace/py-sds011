@@ -1,28 +1,15 @@
 import mysql.connector as mysql
 from datetime import datetime
-import os
 
-# enter your server IP address/domain name
-HOST = os.environ.get('HOST') # or "domain.com"
-# database name, if you want just to connect to MySQL server, leave it empty
-DATABASE = os.environ.get('DATABASE')
-# this is the user you create
-USER = os.environ.get('USER')
-# user password
-PASSWORD = os.environ.get('PASSWORD')
-# port
-PORT = os.environ.get('PORT')
-
+JSON_FILE = 'config.json'
 TABLE_INSERT = "INSERT INTO {} (PM2_5,AQI2_5,PM10,AQI10,date)"
-#TABLE_INSERT = "INSERT INTO measures"
 
 class mydb(object):
 
-    def __init__(self):
+    def __init__(self, host, name, user, password, port):
         # connect to MySQL server
-        self.db = mysql.connect(host=HOST, database=DATABASE, user=USER, password=PASSWORD, port=PORT)
-        print("Connected to {}:{}".format(HOST, self.db.get_server_info()))
-        # enter your code here!
+        self.db = mysql.connect(host=host, database=name, user=user, password=password, port=port)
+        print("Connected to {}:{}".format(host, self.db.get_server_info()))
         self.cursor = self.db.cursor()
 
     def showTables(self):
@@ -59,7 +46,11 @@ class mydb(object):
 
 
 if __name__ == "__main__":
-    db = mydb()
+    with open(JSON_FILE, 'r') as in_file:
+        conf = json.load(in_file)
+        # Init DB
+    db = mydb(host=conf['db_config']['host'], name=conf['db_config']['name'], port=conf['db_config']['port'], \
+              user=conf['db_config']['user'], password=conf['db_config']['password'])
     db.showTables()
     db.showTableContent()
     db.describeTable()
