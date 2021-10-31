@@ -178,13 +178,15 @@ class SDS011(object):
 
 if __name__ == "__main__":
     # Init sensor
-    sensor = SDS011("/dev/tty.wchusbserial410", use_query_mode=True)
+    sensor = SDS011("/dev/tty.wchusbserial620", use_query_mode=True)
     # Turn-off sensor
     sensor.sleep(sleep=False)
     # Sleep 15 seconds
     time.sleep(15)
     # Init DB
     db = mydb()
+    ts = Thingspeak(write_api_key=wr_key, channel_id=ch_id)
+    myaqi = Aqicn(token=aqi_token)
     for iter in range(1):
         # Query Sensor
         pm2_5, pm10 = sensor.query()
@@ -194,6 +196,8 @@ if __name__ == "__main__":
         val_str = '"{}", "{}", "{}", "{}"'.format(pm2_5, aqi_pm2_5, pm10, aqi_pm10)
         print("values: {}".format(val_str))
         db.tableInsert(values=val_str)
+        ts.post_cloud(value1=pm2_5, value2=pm10, value3=aqi_pm2_5, value4=aqi_pm10)
+        myaqi.post_cloud(pm2_5=pm2_5, pm10=pm10)
         # Sleep 2 seconds before next measure
         time.sleep(2)
 
