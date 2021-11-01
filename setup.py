@@ -2,10 +2,10 @@ from setuptools import setup
 
 setup(
     name='py-sds011',
-    description='Python interface to the SDS011 air quality sensor.',
-    author='Ivan Kalchev',
+    description='Python framework to read air quality sensor data from SDS011 and upload them to DB/AQIcn/Thinspeak',
+    author='Flavio Pace',
     version='0.9',
-    url='https://github.com/ikalchev/py-sds011',
+    url='https://github.com/flaviopace/py-sds011',
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Programming Language :: Python :: 3',
