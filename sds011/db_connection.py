@@ -1,5 +1,8 @@
 import mysql.connector as mysql
 from datetime import datetime
+import json
+import os
+import sys
 
 JSON_FILE = 'config.json'
 TABLE_INSERT = "INSERT INTO {} (PM2_5,AQI2_5,PM10,AQI10,date)"
@@ -46,7 +49,7 @@ class mydb(object):
 
 
 if __name__ == "__main__":
-    with open(JSON_FILE, 'r') as in_file:
+    with open(os.path.join(sys.path[0], JSON_FILE), 'r') as in_file:
         conf = json.load(in_file)
         # Init DB
     db = mydb(host=conf['db_config']['host'], name=conf['db_config']['name'], port=conf['db_config']['port'], \
