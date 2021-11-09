@@ -21,5 +21,8 @@ setup(
     ],
     install_requires=[
         'pyserial',
+        'python-aqi',
+        'mysql-connector-python',
+        'httplib2'
     ],
 )
