@@ -185,7 +185,7 @@ class SDS011(object):
 
 if __name__ == "__main__":
     # Init sensor
-    sensor = SDS011("/dev/tty.wchusbserial620", use_query_mode=True)
+    sensor = SDS011("/dev/ttyUSB0", use_query_mode=True)
     # Turn-on sensor
     sensor.sleep(sleep=False)
     # Sleep 15 seconds
