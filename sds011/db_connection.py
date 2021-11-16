@@ -5,7 +5,7 @@ import os
 import sys
 
 JSON_FILE = 'config.json'
-TABLE_INSERT = "INSERT INTO {} (PM2_5,AQI2_5,PM10,AQI10,date,geotag)"
+TABLE_INSERT = "INSERT INTO {} (PM2_5,AQI2_5,PM10,AQI10,geotag,date)"
 
 class mydb(object):
 
