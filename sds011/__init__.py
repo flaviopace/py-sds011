@@ -204,7 +204,7 @@ if __name__ == "__main__":
         aqi_pm2_5 = aqi.to_iaqi(aqi.POLLUTANT_PM25, str(pm2_5))
         aqi_pm10 = aqi.to_iaqi(aqi.POLLUTANT_PM10, str(pm10))
         print("PM2_5: {} - AQI {}\nPM10: {} - AQI {}".format(pm2_5, aqi_pm2_5, pm10, aqi_pm10))
-        val_str = '"{}", "{}", "{}", "{}"'.format(pm2_5, aqi_pm2_5, pm10, aqi_pm10)
+        val_str = '"{}", "{}", "{}", "{}", "{}"'.format(pm2_5, aqi_pm2_5, pm10, aqi_pm10, conf['db_config']['geohash'])
         print("values: {}".format(val_str))
         db.tableInsert(values=val_str)
         ts.post_cloud(value1=pm2_5, value2=pm10, value3=aqi_pm2_5, value4=aqi_pm10)
@@ -214,5 +214,5 @@ if __name__ == "__main__":
 
     # Turn-off sensor
     sensor.sleep(sleep=True)
-    db.showTableContent()
+    #db.showTableContent()
     db.close()

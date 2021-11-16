@@ -5,7 +5,7 @@ import os
 import sys
 
 JSON_FILE = 'config.json'
-TABLE_INSERT = "INSERT INTO {} (PM2_5,AQI2_5,PM10,AQI10,date)"
+TABLE_INSERT = "INSERT INTO {} (PM2_5,AQI2_5,PM10,AQI10,date,geotag)"
 
 class mydb(object):
 
@@ -56,6 +56,6 @@ if __name__ == "__main__":
               user=conf['db_config']['user'], password=conf['db_config']['password'])
     db.showTables()
     db.showTableContent()
-    db.describeTable()
-    db.tableInsert(values='"3.4", "5", "5.6", "7"')
+    #db.describeTable(tablename='measures_demo')
+    #db.tableInsert(values='"3.4", "5", "5.6", "7"', tablename='measures_demo')
     db.close()
