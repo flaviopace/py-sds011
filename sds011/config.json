@@ -6,6 +6,7 @@
      "port": 12345,
      "user": "user",
      "password": "pass"
+     "geohash" : "demo123"
   },
 
   "ts_config" :
